@@ -1,0 +1,207 @@
+ORGANIZATION_BLOCK OB 1
+TITLE = Junction with a pedestrian crossing
+//
+// Main road and side road traffic lights, a pedestrian request button
+// and a night mode with flashing amber.
+//
+// Inputs                     Outputs
+//   I 0.0  Pedestrian button   Q 0.0  Main red     Q 0.3  Side red
+//   I 0.1  Night mode switch   Q 0.1  Main amber   Q 0.4  Side amber
+//                              Q 0.2  Main green   Q 0.5  Side green
+//                              Q 1.0  Walk         Q 1.1  Don't walk
+// Memory
+//   MW 10          Step number 0..6
+//   M 20.0         Pedestrian request (latched until the walk step)
+//   M 30.0         Step finished (true for one scan)
+//   M 40.0..40.6   Step 0..6 active
+//   M 0.5          1 Hz clock (CPU properties: clock memory byte = MB 0)
+//   T 1            Step timer
+//
+// Steps
+//   0 Main green 6 s   1 Main amber 2 s   2 All red 1 s   3 Walk 4 s
+//   4 Side green 4 s   5 Side amber 2 s   6 All red 1 s
+//   Step 3 is skipped if nobody pressed the button.
+//
+AUTHOR : JLee
+FAMILY : Traffic
+NAME : JUNCTION
+VERSION : 1.0
+
+
+VAR_TEMP
+  OB1_EV_CLASS : BYTE ;
+  OB1_SCAN_1 : BYTE ;
+  OB1_PRIORITY : BYTE ;
+  OB1_OB_NUMBR : BYTE ;
+  OB1_RESERVED_1 : BYTE ;
+  OB1_RESERVED_2 : BYTE ;
+  OB1_PREV_CYCLE : INT ;
+  OB1_MIN_CYCLE : INT ;
+  OB1_MAX_CYCLE : INT ;
+  OB1_DATE_TIME : DATE_AND_TIME ;
+END_VAR
+BEGIN
+NETWORK
+TITLE = Latch the pedestrian request
+
+      A     I      0.0
+      S     M     20.0
+
+NETWORK
+TITLE = Night mode holds the sequence at step 0
+
+      A     I      0.1
+      JCN   DAY
+      L     0
+      T     MW    10
+DAY:  NOP   0
+
+NETWORK
+TITLE = Step timer: load the time for the current step
+
+      L     MW    10
+      JL    BAD
+      JU    ST0
+      JU    ST1
+      JU    ST2
+      JU    ST3
+      JU    ST4
+      JU    ST5
+      JU    ST6
+BAD:  L     0                   // step number out of range: go back to 0
+      T     MW    10
+      JU    ST0
+ST0:  L     S5T#6S              // main green
+      JU    RUN
+ST1:  L     S5T#2S              // main amber
+      JU    RUN
+ST2:  L     S5T#1S              // all red
+      JU    RUN
+ST3:  L     S5T#4S              // walk
+      JU    RUN
+ST4:  L     S5T#4S              // side green
+      JU    RUN
+ST5:  L     S5T#2S              // side amber
+      JU    RUN
+ST6:  L     S5T#1S              // all red
+RUN:  AN    M     30.0          // restart the timer one scan after each step change
+      AN    I      0.1          // and keep it stopped at night
+      SD    T      1
+
+NETWORK
+TITLE = Go to the next step when the timer is done
+
+      A     T      1
+      =     M     30.0
+      A     M     30.0
+      JCN   END
+      L     MW    10
+      L     1
+      +I
+      T     MW    10
+      L     MW    10            // skip the walk step if nobody asked
+      L     3
+      ==I
+      AN    M     20.0
+      JCN   NOSK
+      L     4
+      T     MW    10
+NOSK: L     MW    10            // entering the walk step clears the request
+      L     3
+      ==I
+      R     M     20.0
+      L     MW    10            // after step 6 go back to 0
+      L     7
+      >=I
+      JCN   END
+      L     0
+      T     MW    10
+END:  NOP   0
+
+NETWORK
+TITLE = Decode the step number
+
+      L     MW    10
+      L     0
+      ==I
+      =     M     40.0
+      L     MW    10
+      L     1
+      ==I
+      =     M     40.1
+      L     MW    10
+      L     2
+      ==I
+      =     M     40.2
+      L     MW    10
+      L     3
+      ==I
+      =     M     40.3
+      L     MW    10
+      L     4
+      ==I
+      =     M     40.4
+      L     MW    10
+      L     5
+      ==I
+      =     M     40.5
+      L     MW    10
+      L     6
+      ==I
+      =     M     40.6
+
+NETWORK
+TITLE = Main road lights
+
+      A     M     40.0          // green
+      AN    I      0.1
+      =     Q      0.2
+      A     M     40.1          // amber in step 1, or flashing at night
+      AN    I      0.1
+      O
+      A     I      0.1
+      A     M      0.5
+      =     Q      0.1
+      A(                        // red in every other step
+      O     M     40.2
+      O     M     40.3
+      O     M     40.4
+      O     M     40.5
+      O     M     40.6
+      )
+      AN    I      0.1
+      =     Q      0.0
+
+NETWORK
+TITLE = Side road lights
+
+      A     M     40.4          // green
+      AN    I      0.1
+      =     Q      0.5
+      A     M     40.5          // amber in step 5, or flashing at night
+      AN    I      0.1
+      O
+      A     I      0.1
+      A     M      0.5
+      =     Q      0.4
+      A(                        // red in every other step
+      O     M     40.0
+      O     M     40.1
+      O     M     40.2
+      O     M     40.3
+      O     M     40.6
+      )
+      AN    I      0.1
+      =     Q      0.3
+
+NETWORK
+TITLE = Pedestrian lights (both dark at night)
+
+      A     M     40.3
+      AN    I      0.1
+      =     Q      1.0
+      AN    M     40.3
+      AN    I      0.1
+      =     Q      1.1
+
+END_ORGANIZATION_BLOCK

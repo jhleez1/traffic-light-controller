@@ -1,0 +1,62 @@
+:root {
+  --bg: #0f1214; --panel: #171c20; --line: #2b333a; --text: #e8ecef; --muted: #8e9aa4;
+  --accent: #00b3a4; --red: #ef4444; --amber: #f59e0b; --green: #22c55e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, "Segoe UI", sans-serif; }
+code, kbd, pre, dd, textarea, .listing { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+a { color: var(--accent); }
+
+.top { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; padding: 24px clamp(16px, 4vw, 40px) 8px; }
+h1 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
+.sub { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
+.gh { border: 1px solid var(--line); padding: 8px 14px; border-radius: 8px; text-decoration: none; }
+
+main { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(260px, 1fr); gap: 16px; padding: 16px clamp(16px, 4vw, 40px); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+.panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 12px; }
+.panel h2 small { text-transform: none; letter-spacing: 0; }
+.code { grid-column: 1 / -1; }
+
+canvas { width: 100%; height: auto; display: block; border-radius: 8px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-top: 14px; }
+.btn { font: inherit; font-weight: 600; border: 1px solid var(--line); background: #222a31; color: var(--text); border-radius: 8px; padding: 9px 14px; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #032622; }
+.btn:focus-visible, .switch input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn:active { transform: translateY(1px); }
+kbd { font-size: 11px; padding: 1px 5px; border-radius: 4px; background: #0003; margin-left: 4px; }
+.switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.switch input { accent-color: var(--accent); width: 18px; height: 18px; }
+.msg { color: var(--muted); margin: 10px 0 0; min-height: 1.5em; }
+
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0 0 20px; }
+.kv dt { color: var(--muted); } .kv dt code { color: var(--accent); font-size: 12px; }
+.kv dd { margin: 0; text-align: right; font-weight: 700; }
+.kv dd.run { color: var(--green); } .kv dd.stop { color: var(--red); }
+.outs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.out { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 8px; border-radius: 6px; background: #0002; }
+.out i { width: 12px; height: 12px; border-radius: 50%; background: #333b42; flex: none; }
+.out code { color: var(--muted); font-size: 11px; margin-left: auto; }
+.out.on i { background: var(--c); box-shadow: 0 0 10px var(--c); }
+
+.code-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.code-head h2 { margin: 0; }
+.code-btns { display: flex; gap: 8px; }
+.listing, textarea { width: 100%; height: 460px; overflow: auto; font-size: 12.5px; line-height: 1.6; background: #0c0f11; border: 1px solid var(--line); border-radius: 8px; color: var(--text); }
+.listing { padding: 8px 0; }
+.listing div { display: flex; white-space: pre; padding-right: 12px; opacity: 0.35; transition: opacity 0.2s; }
+.listing div.x { opacity: 1; }
+.listing div.step { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.listing .n { width: 44px; flex: none; text-align: right; padding-right: 12px; color: var(--muted); user-select: none; }
+.listing .c { color: #7c8a96; font-style: italic; } .listing .k { color: #ff9e64; } .listing .l { color: #7dcfff; } .listing .t { color: #bb9af7; }
+textarea { padding: 8px 12px; resize: vertical; tab-size: 6; }
+.err { color: #fff; background: #7f1d1d; padding: 8px 12px; border-radius: 8px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+.note { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+footer { padding: 8px clamp(16px, 4vw, 40px) 32px; color: var(--muted); font-size: 13px; }
+
+@media (max-width: 760px) {
+  main { grid-template-columns: 1fr; }
+  .listing, textarea { height: 360px; }
+}

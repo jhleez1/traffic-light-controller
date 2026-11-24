@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Traffic Light Controller · STEP 7 STL in the browser</title>
+<meta name="description" content="A Siemens STEP 7 STL traffic light program, running in the browser on a tiny S7 CPU written in JavaScript.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Traffic Light Controller</h1>
+    <p class="sub">A Siemens STEP 7 program in STL, running on a tiny S7 CPU written in JavaScript. Edit the code and reload it.</p>
+  </div>
+  <a class="gh" href="https://github.com/jhleez1/traffic-light-controller">Source on GitHub</a>
+</header>
+
+<main>
+  <section class="panel junction">
+    <canvas id="road" width="520" height="380" aria-label="Road junction with traffic lights, a pedestrian crossing and cars"></canvas>
+    <div class="controls">
+      <button id="ped" class="btn primary">Pedestrian button <kbd>I 0.0</kbd></button>
+      <label class="switch"><input type="checkbox" id="night"><span>Night mode <kbd>I 0.1</kbd></span></label>
+      <label class="switch"><input type="checkbox" id="fast"><span>4× speed</span></label>
+    </div>
+    <p class="msg" id="msg">Press the pedestrian button to request a crossing.</p>
+  </section>
+
+  <section class="panel status">
+    <h2>CPU</h2>
+    <dl class="kv">
+      <dt>Mode</dt><dd id="mode" class="run">RUN</dd>
+      <dt>Step <code>MW 10</code></dt><dd id="step">0</dd>
+      <dt>Timer <code>T 1</code></dt><dd id="timer">-</dd>
+      <dt>Request <code>M 20.0</code></dt><dd id="req">0</dd>
+      <dt>Clock <code>M 0.5</code></dt><dd id="clk">0</dd>
+      <dt>Scans</dt><dd id="scans">0</dd>
+    </dl>
+    <h2>Outputs</h2>
+    <div class="outs" id="outs"></div>
+  </section>
+
+  <section class="panel code">
+    <div class="code-head">
+      <h2>OB1.awl <small id="lines"></small></h2>
+      <div class="code-btns">
+        <button id="edit" class="btn">Edit</button>
+        <button id="load" class="btn primary" hidden>Load into CPU</button>
+        <button id="restore" class="btn" hidden>Restore original</button>
+      </div>
+    </div>
+    <p class="err" id="err" hidden></p>
+    <div id="view" class="listing" aria-label="Program listing. Lines executed in the last scan are bright."></div>
+    <textarea id="editor" spellcheck="false" hidden aria-label="STL source"></textarea>
+    <p class="note">Bright lines ran in the last scan; dim lines were jumped over. The highlighted block is the active step.</p>
+  </section>
+</main>
+
+<footer>Built by Jihan Lee · <a href="https://github.com/jhleez1">github.com/jhleez1</a></footer>
+
+<script src="step7/ob1.js"></script>
+<script src="stl.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
