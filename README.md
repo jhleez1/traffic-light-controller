@@ -66,4 +66,5 @@ If you change `OB1.awl`, run `node tools/embed.js` so the web page uses the new 
 
 ---
 
-Built by [Jihan Lee](https://github.com/jhleez1), with help from Claude (AI) for the emulator and web page.
+Built by [Jihan Lee](https://github.com/jhleez1)
+
